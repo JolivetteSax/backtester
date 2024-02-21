@@ -3,6 +3,7 @@ const csv=require('csvtojson');
 
 let cash = 1000.00
 let sp_shares = 0;
+let total_expenses = 0;
 let nav;
 let oldestDate = new Date();
 let yields = {};
@@ -49,8 +50,22 @@ csv()
       let dividend = 0;
       dividend = ((sp_value * entry.yield) / 1200);
       cash = cash + dividend;
-    }
+
+      // Management expenses
+      nav = cash + sp_value;
+      let expenses = (nav * .01) / 12;
+      cash = cash - expenses;
+      total_expenses = total_expenses + expenses;
+      if(cash < 0){ // TODO, gotta sell!!
+        console.log("Dividends do not cover expenses: " + entry.date);
+        console.log("Nav was: " + nav.toFixed(2));
+        console.log("expenses: " + expenses.toFixed(2));
+        console.log("Yield was: " + entry.yield.toFixed(2));
+        cash = 0;
+      }
  
+    }
+
     if(entry.price < cash){
       let shares = Math.floor(cash / entry.price);
       sp_shares += shares;
@@ -63,8 +78,13 @@ csv()
     //console.log('%s ---> %i', entry.date.toString(), nav);
     //console.log('%s -> %f', entry.date.toString(), entry.price);
   }
+
+  let exp_ratio = (total_expenses / nav) * 100;
+
   console.log("S&P shares: " + sp_shares);
   console.log("cash: " + cash.toFixed(2));
+  console.log("Real Exp: " + total_expenses.toFixed(2));
+  console.log("Real Exp Ratio%: " + exp_ratio.toFixed(2));
   console.log("Final nav: " + nav.toFixed(2));
   fs.writeFileSync('./perf.json', JSON.stringify(performance, null, 2));
 });

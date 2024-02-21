@@ -1,3 +1,10 @@
+package-lock.json
+
+#project specific tmp files
+perf.json
+test.png
+imgs/*.png
+
 # Logs
 logs
 *.log
