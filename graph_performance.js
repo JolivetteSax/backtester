@@ -18,7 +18,6 @@ async function render(input){
       title: 'Performance',
       chartArea: {width: '80%'},
       vAxis: {
-        title: 'Net Asset Valuation',
         minValue: 0
       }
    };
@@ -28,8 +27,8 @@ async function render(input){
   `;
 
   return image = await GoogleChartsNode.render(drawChartStr, {
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 900,
     puppeteerOptions: {
       headless: 'new'
     }

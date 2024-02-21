@@ -1,5 +1,7 @@
 package-lock.json
 
+*.swp
+
 #project specific tmp files
 perf.json
 test.png
