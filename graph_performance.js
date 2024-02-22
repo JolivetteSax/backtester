@@ -11,11 +11,11 @@ async function render(input){
   var data = new google.visualization.DataTable();
 
   data.addColumn('string', 'Time');
-  data.addColumn('number', 'NAV');
+  data.addColumn('number', 'Snapshot');
   data.addRows(${input});
 
   const options = {
-      title: 'Performance',
+      title: '',
       chartArea: {width: '80%'},
       vAxis: {
         minValue: 0

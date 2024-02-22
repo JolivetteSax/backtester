@@ -73,6 +73,7 @@ csv()
 //      console.log('Purchase S&P %s, %i', entry.date.toISOString(), shares);
     }
 
+    sp_value = (sp_shares * entry.price); 
     nav = cash + sp_value;
     performance.push([entry.date.toDateString(), nav])
     //console.log('%s ---> %i', entry.date.toString(), nav);
