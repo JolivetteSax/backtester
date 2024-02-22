@@ -1,5 +1,6 @@
 const fs = require('fs');
 const csv=require('csvtojson');
+const bondCalculator = require('bond-calculator');
 
 let cash = 1000.00
 let sp_shares = 0;
@@ -61,9 +62,11 @@ csv()
   let treasuries = [];
  
   for(const entry of sorted){
+    if(!entry.yield) {
+      continue;
+    }
+
     let sp_value = (sp_shares * entry.price); 
-    // TODO record annual dividend for taxable accounts
-    if(entry.yield) {
       let dividend = 0;
       dividend = ((sp_value * entry.yield) / 1200);
       cash = cash + dividend;
@@ -83,20 +86,22 @@ csv()
       let expenses = (nav * .01) / 12;
       cash = cash - expenses;
       total_expenses = total_expenses + expenses;
-      if(cash < 0){ // TODO, gotta sell!!
+      if(cash < 0){ // TODO, sell
         console.log("Dividends do not cover expenses: " + entry.date);
         console.log("Nav was: " + nav.toFixed(2));
         console.log("expenses: " + expenses.toFixed(2));
         console.log("Yield was: " + entry.yield.toFixed(2));
         cash = 0;
       }
-    }
+    
 
-    let bondInvestment = cash * .2;
-    if(bondInvestment > 100){
+    let bondInvestment = cash * 1;
+    if(bondInvestment > 0){
       let yield = treas_yields[entry.date];
       if(yield){
-        treasuries.push({date: entry.date, amount: bondInvestment, yield});
+        let maturity = new Date(entry.date);
+        maturity.setFullYear(maturity.getFullYear() + 10);
+        treasuries.push({date: entry.date, amount: bondInvestment, yield, maturity});
         cash = cash - bondInvestment;
       }
     }
@@ -108,11 +113,21 @@ csv()
       //console.log('Purchase S&P %s, %i', entry.date.toISOString(), shares);
     }
 
-    sp_value = (sp_shares * entry.price); 
+
     let treas_value = 0;
     for(const note of treasuries) {
-      treas_value = treas_value + note.amount;
+      let rate = treas_yields[entry.date] / 100;
+      let maturity = note.maturity;
+      let settlement = new Date(entry.date);
+      let yield = note.yield / 100;
+      let redemption = note.amount;
+      let frequency = 2;
+      let convention = '30U/360',
+      b = bondCalculator({settlement, maturity, rate: yield, redemption, frequency, convention});
+      treas_value = treas_value + b.price(rate);
     }
+
+    sp_value = (sp_shares * entry.price); 
     nav = cash + sp_value + treas_value;
     performance.push([entry.date.toDateString(), nav])
     let months = performance.length;
@@ -142,6 +157,7 @@ csv()
   console.log("Real Exp: " + total_expenses.toFixed(2));
   console.log("Real Exp Ratio%: " + exp_ratio.toFixed(2));
   console.log("Final nav: " + nav.toFixed(2));
-  fs.writeFileSync('./perf.json', JSON.stringify(monthly, null, 2));
+  //fs.writeFileSync('./perf.json', JSON.stringify(monthly, null, 2));
+  fs.writeFileSync('./perf.json', JSON.stringify(performance, null, 2));
 });
 
