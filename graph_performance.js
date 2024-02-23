@@ -11,7 +11,7 @@ async function render(input){
   var data = new google.visualization.DataTable();
 
   data.addColumn('string', 'Time');
-  data.addColumn('number', 'Snapshot');
+  data.addColumn('number', '');
   data.addRows(${input});
 
   const options = {

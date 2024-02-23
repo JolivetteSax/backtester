@@ -61,9 +61,13 @@ csv()
   let treasuries = [];
  
   for(const entry of sorted){
-    let sp_value = (sp_shares * entry.price); 
+
     // TODO record annual dividend for taxable accounts
-    if(entry.yield) {
+    if(!entry.yield) {
+      continue;
+    }
+
+    let sp_value = (sp_shares * entry.price); 
       let dividend = 0;
       dividend = ((sp_value * entry.yield) / 1200);
       cash = cash + dividend;
@@ -90,7 +94,7 @@ csv()
         console.log("Yield was: " + entry.yield.toFixed(2));
         cash = 0;
       }
-    }
+    
 
     let bondInvestment = cash; // 100% into bonds
     if(bondInvestment > 0){
