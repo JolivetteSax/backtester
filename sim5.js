@@ -96,7 +96,8 @@ csv()
       }
     
 
-    let bondInvestment = cash; // 100% into bonds
+    //    let bondInvestment = cash; // 100% into bonds
+    bondInvestment = 0;
     if(bondInvestment > 0){
       let yield = treas_yields[entry.date];
       if(yield){
