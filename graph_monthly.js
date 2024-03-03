@@ -48,7 +48,7 @@ for(let i = 0; i < data.length; i++){
   data[i][0] = i+1;
   data[i][2] = data2[i][1];
 }
-
+data = data.slice(data.length / 2);
 render(JSON.stringify(data))
 .then(image => {
   fs.writeFileSync('./monthly.png',image);
